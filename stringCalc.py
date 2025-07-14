@@ -26,9 +26,9 @@ def start(message):
 
 
 def get_general(message):
-    global kern
-    kern = message.text
-    print(kern)
+    global general
+    general = message.text
+    print(general)
 
     bot.send_message(message.from_user.id, 'Введите керн')
     bot.register_next_step_handler(message, get_kern)
@@ -40,7 +40,7 @@ def get_kern(message):
     print(kern)
 
     bot.send_message(message.from_user.id, 'Введите длину навивки')
-    bot.register_next_step_handler(message, get_kern)
+    bot.register_next_step_handler(message, get_lengthCooper)
 
 
 def get_lengthCooper(message):
