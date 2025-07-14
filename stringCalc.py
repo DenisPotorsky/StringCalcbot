@@ -18,39 +18,39 @@ keyboard = telebot.types.InlineKeyboardMarkup()
 keyboard.row(telebot.types.InlineKeyboardButton('Расчет струны с однинарной навивкой', callback_data=' '))
 keyboard.row(telebot.types.InlineKeyboardButton('Расчет струны с двойной навивкой', callback_data=' '))
 
-user_data = {}
+data = {}
 
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.send_message(message.chat.id, 'Привет! Пожалуйста, введите общий диаметр:')
+    bot.send_message(message.chat.id, 'Привет! Пожалуйста, введите общий диаметр струны:')
     # Сохраняем состояние ожидания числа
-    user_data[message.chat.id] = {"step": "waiting_for_name"}
+    data[message.chat.id] = {"step": "waiting_for_name"}
 
 
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     chat_id = message.chat.id
 
-    if chat_id in user_data:
-        step = user_data[chat_id]["step"]
+    if chat_id in data:
+        step = data[chat_id]["step"]
 
         if step == "waiting_for_name":
             general = message.text
-            bot.send_message(chat_id, f'Спасибо, {general}! Теперь введите диаметр стали:')
-            user_data[chat_id]["general"] = general
-            user_data[chat_id]["step"] = "waiting_for_number"
+            bot.send_message(chat_id, f'Теперь введите диаметр стали:')
+            data[chat_id]["general"] = general
+            data[chat_id]["step"] = "waiting_for_number"
 
         elif step == "waiting_for_number":
             kern = message.text
-            user_data[chat_id]["kern"] = kern
-            bot.send_message(chat_id, f'Вы ввели общий диаметр: {user_data[chat_id]["general"]} и диаметр стали:'
+            data[chat_id]["kern"] = kern
+            bot.send_message(chat_id, f'Вы ввели общий диаметр: {data[chat_id]["general"]} и диаметр стали:'
                                       f' {kern}')
             # Завершаем разговор, очищаем данные
-            print(user_data[chat_id])
+            print(data[chat_id])
 
     else:
-        bot.send_message(chat_id, 'Я не понимаю. Пожалуйста, начните с /start.')
+        bot.send_message(chat_id, 'Ошибка. Пожалуйста, начните с /start.')
 # @bot.message_handler(commands=['start'])
 # def getMessage(message):
 #     bot.send_message(message.from_user.id,
