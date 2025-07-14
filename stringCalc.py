@@ -12,47 +12,74 @@ from calculator import cooperDiam
 api_token = "8035819275:AAGAPvklVOpUOgKBvs94Wf4cvj_iYEurinI"
 bot = telebot.TeleBot(api_token)
 
-bot = telebot.TeleBot(api_token)
 
 # keyboard = telebot.types.InlineKeyboardMarkup()
 # keyboard.row(telebot.types.InlineKeyboardButton('Расчет струны с однинарной навивкой', callback_data=' '))
 # keyboard.row(telebot.types.InlineKeyboardButton('Расчет струны с двойной навивкой', callback_data=' '))
 
-data = {}
 
-
-@bot.message_handler(commands=['start'])
+@bot.message_handler(content_types=['text'])
 def start(message):
-    bot.send_message(message.chat.id, 'Привет! Пожалуйста, введите общий диаметр струны:')
-    # Сохраняем состояние ожидания числа
-    data[message.chat.id] = {"step": "waiting_for_name"}
+    if message.text == '/start':
+        bot.send_message(message.from_user.id, 'Привет! Введите общий диаметр струны')
+        bot.register_next_step_handler(message, get_general)
 
 
-@bot.message_handler(func=lambda message: True)
-def handle_message(message):
-    chat_id = message.chat.id
+def get_general(message):
+    global kern
+    kern = message.text
+    print(kern)
 
-    if chat_id in data:
-        step = data[chat_id]["step"]
+    bot.send_message(message.from_user.id, 'Введите керн')
+    bot.register_next_step_handler(message, get_kern)
 
-        if step == "waiting_for_name":
-            general = message.text
-            bot.send_message(chat_id, f'Теперь введите диаметр стали:')
-            data[chat_id]["general"] = int(general)
-            data[chat_id]["step"] = "waiting_for_number"
 
-        elif step == "waiting_for_number":
-            kern = message.text
-            data[chat_id]["kern"] = int(kern)
-            bot.send_message(chat_id, f'Вы ввели общий диаметр: {data[chat_id]["general"]} мм и диаметр стали:'
-                                      f' {kern} мм')
-            # Завершаем разговор, очищаем данные
-            print(data[chat_id])
-            general = data.get('general')
-            print(general)
+def get_kern(message):
+    global kern
+    kern = message.text
+    print(kern)
 
-    else:
-        bot.send_message(chat_id, 'Ошибка. Пожалуйста, начните с /start.')
+    bot.send_message(message.from_user.id, 'Введите длину навивки')
+    bot.register_next_step_handler(message, get_kern)
+
+
+def get_lengthCooper(message):
+    global lengthCooper
+    lengthCooper = message.text
+    print(lengthCooper)
+
+
+# data = {}
+
+
+# @bot.message_handler(commands=['start'])
+# def start(message):
+#     bot.send_message(message.chat.id, 'Привет! Пожалуйста, введите общий диаметр струны:')
+#     # Сохраняем состояние ожидания числа
+#     data[message.chat.id] = {"step": "waiting_for_name"}
+
+# @bot.message_handler(func=lambda message: True)
+# def handle_message(message):
+#     chat_id = message.chat.id
+#
+#     if chat_id in data:
+#         step = data[chat_id]["step"]
+#
+#         if step == "waiting_for_name":
+#             general = message.text
+#             bot.send_message(chat_id, f'Теперь введите диаметр стали:')
+#             data[chat_id]["general"] = int(general)
+#             data[chat_id]["step"] = "waiting_for_number"
+#
+#         elif step == "waiting_for_number":
+#             kern = message.text
+#             data[chat_id]["kern"] = int(kern)
+#             bot.send_message(chat_id, f'Вы ввели общий диаметр: {data[chat_id]["general"]} мм и диаметр стали:'
+#                                       f' {kern} мм')
+#             # Завершаем разговор, очищаем данные
+#             print(data[chat_id])
+#     else:
+#         bot.send_message(chat_id, 'Ошибка. Пожалуйста, начните с /start.')
 
 
 # @bot.message_handler(commands=['start'])
