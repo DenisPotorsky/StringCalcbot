@@ -14,9 +14,9 @@ bot = telebot.TeleBot(api_token)
 
 bot = telebot.TeleBot(api_token)
 
-keyboard = telebot.types.InlineKeyboardMarkup()
-keyboard.row(telebot.types.InlineKeyboardButton('Расчет струны с однинарной навивкой', callback_data=' '))
-keyboard.row(telebot.types.InlineKeyboardButton('Расчет струны с двойной навивкой', callback_data=' '))
+# keyboard = telebot.types.InlineKeyboardMarkup()
+# keyboard.row(telebot.types.InlineKeyboardButton('Расчет струны с однинарной навивкой', callback_data=' '))
+# keyboard.row(telebot.types.InlineKeyboardButton('Расчет струны с двойной навивкой', callback_data=' '))
 
 data = {}
 
@@ -38,19 +38,23 @@ def handle_message(message):
         if step == "waiting_for_name":
             general = message.text
             bot.send_message(chat_id, f'Теперь введите диаметр стали:')
-            data[chat_id]["general"] = general
+            data[chat_id]["general"] = int(general)
             data[chat_id]["step"] = "waiting_for_number"
 
         elif step == "waiting_for_number":
             kern = message.text
-            data[chat_id]["kern"] = kern
-            bot.send_message(chat_id, f'Вы ввели общий диаметр: {data[chat_id]["general"]} и диаметр стали:'
-                                      f' {kern}')
+            data[chat_id]["kern"] = int(kern)
+            bot.send_message(chat_id, f'Вы ввели общий диаметр: {data[chat_id]["general"]} мм и диаметр стали:'
+                                      f' {kern} мм')
             # Завершаем разговор, очищаем данные
             print(data[chat_id])
+            general = data.get('general')
+            print(general)
 
     else:
         bot.send_message(chat_id, 'Ошибка. Пожалуйста, начните с /start.')
+
+
 # @bot.message_handler(commands=['start'])
 # def getMessage(message):
 #     bot.send_message(message.from_user.id,
