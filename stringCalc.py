@@ -24,7 +24,7 @@ user_data = {}
 @bot.message_handler(commands=['start'])
 def start(message):
     bot.send_message(message.chat.id, 'Привет! Пожалуйста, введите общий диаметр:')
-    # Сохраняем состояние ожидания имени
+    # Сохраняем состояние ожидания числа
     user_data[message.chat.id] = {"step": "waiting_for_name"}
 
 
@@ -36,15 +36,16 @@ def handle_message(message):
         step = user_data[chat_id]["step"]
 
         if step == "waiting_for_name":
-            user_name = message.text
-            bot.send_message(chat_id, f'Спасибо, {user_name}! Теперь введите диаметр стали:')
-            user_data[chat_id]["name"] = user_name
+            general = message.text
+            bot.send_message(chat_id, f'Спасибо, {general}! Теперь введите диаметр стали:')
+            user_data[chat_id]["general"] = general
             user_data[chat_id]["step"] = "waiting_for_number"
 
         elif step == "waiting_for_number":
-            favorite_number = message.text
-            user_data[chat_id]["number"] = favorite_number
-            bot.send_message(chat_id, f'Вы общий диаметр: {user_data[chat_id]["name"]} и диаметр стали: {favorite_number}')
+            kern = message.text
+            user_data[chat_id]["kern"] = kern
+            bot.send_message(chat_id, f'Вы ввели общий диаметр: {user_data[chat_id]["general"]} и диаметр стали:'
+                                      f' {kern}')
             # Завершаем разговор, очищаем данные
             print(user_data[chat_id])
 
