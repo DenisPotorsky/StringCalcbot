@@ -2,7 +2,7 @@ import telebot
 
 import calculator
 
-api_token = "8035819275:AAHhFOuCk8QwNKC4Bd4u94UQHuWTx-a-RwI"
+api_token = " "
 bot = telebot.TeleBot(api_token)
 
 
