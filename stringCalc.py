@@ -1,13 +1,4 @@
-from wsgiref import headers
-
 import telebot
-
-import requests
-from urllib3.util import url
-
-import json
-
-from calculator import cooperDiam
 
 api_token = "8035819275:AAGAPvklVOpUOgKBvs94Wf4cvj_iYEurinI"
 bot = telebot.TeleBot(api_token)
@@ -47,6 +38,14 @@ def get_lengthCooper(message):
     global lengthCooper
     lengthCooper = message.text
     print(lengthCooper)
+
+    bot.send_message(message.from_user.id, 'Введите тип струны: 1 или 2')
+    bot.register_next_step_handler(message, get_type_of_string)
+
+def get_type_of_string(message):
+    global type_of_string
+    type_of_string = message.text
+    print(type_of_string)
 
 
 # data = {}
