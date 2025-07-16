@@ -1,12 +1,9 @@
 import telebot
 
-api_token = "8035819275:AAGAPvklVOpUOgKBvs94Wf4cvj_iYEurinI"
+import calculator
+
+api_token = "8035819275:AAHhFOuCk8QwNKC4Bd4u94UQHuWTx-a-RwI"
 bot = telebot.TeleBot(api_token)
-
-
-# keyboard = telebot.types.InlineKeyboardMarkup()
-# keyboard.row(telebot.types.InlineKeyboardButton('Расчет струны с однинарной навивкой', callback_data=' '))
-# keyboard.row(telebot.types.InlineKeyboardButton('Расчет струны с двойной навивкой', callback_data=' '))
 
 
 @bot.message_handler(content_types=['text'])
@@ -18,8 +15,7 @@ def start(message):
 
 def get_general(message):
     global general
-    general = message.text
-    print(general)
+    general = float(message.text)
 
     bot.send_message(message.from_user.id, 'Введите керн')
     bot.register_next_step_handler(message, get_kern)
@@ -27,78 +23,35 @@ def get_general(message):
 
 def get_kern(message):
     global kern
-    kern = message.text
-    print(kern)
+    kern = float(message.text)
 
     bot.send_message(message.from_user.id, 'Введите длину навивки')
     bot.register_next_step_handler(message, get_lengthCooper)
 
 
 def get_lengthCooper(message):
-    global lengthCooper
-    lengthCooper = message.text
-    print(lengthCooper)
+    global len
+    len = float(message.text)
 
     bot.send_message(message.from_user.id, 'Введите тип струны: 1 или 2')
-    bot.register_next_step_handler(message, get_type_of_string)
+    bot.register_next_step_handler(message, calculate)
 
-def get_type_of_string(message):
+
+def calculate(message):
     global type_of_string
     type_of_string = message.text
-    print(type_of_string)
+    if type_of_string == '1':
+        cooper = round(calculator.cooperDiamm(general, kern), 3)
+        lengthCooper = round(calculator.lengthCoop(kern, cooper, len), 3)
+        bot.send_message(message.from_user.id, f'Диаметр меди {cooper}, длина проволоки {lengthCooper}')
+    else:
+        coopFirst = round(calculator.cooperF(general, kern), 3)
+        coopSecond = round(calculator.cooperS(kern, general), 3)
+        lenCoopFirst = round(calculator.lengthCooperPrim(kern, len, coopFirst), 3)
+        lenCoopSec = round(calculator.lengthCooperSec(kern, len, coopFirst, coopSecond), 3)
+        bot.send_message(message.from_user.id,
+                         f'Диаметр меди первичной навивки {coopFirst}, диаметр меди вторичной навивки {coopSecond}, '
+                         f'длина проволоки первичной навивки {lenCoopFirst}, длина проволоки вториной навивки {lenCoopSec}')
 
-
-# data = {}
-
-
-# @bot.message_handler(commands=['start'])
-# def start(message):
-#     bot.send_message(message.chat.id, 'Привет! Пожалуйста, введите общий диаметр струны:')
-#     # Сохраняем состояние ожидания числа
-#     data[message.chat.id] = {"step": "waiting_for_name"}
-
-# @bot.message_handler(func=lambda message: True)
-# def handle_message(message):
-#     chat_id = message.chat.id
-#
-#     if chat_id in data:
-#         step = data[chat_id]["step"]
-#
-#         if step == "waiting_for_name":
-#             general = message.text
-#             bot.send_message(chat_id, f'Теперь введите диаметр стали:')
-#             data[chat_id]["general"] = int(general)
-#             data[chat_id]["step"] = "waiting_for_number"
-#
-#         elif step == "waiting_for_number":
-#             kern = message.text
-#             data[chat_id]["kern"] = int(kern)
-#             bot.send_message(chat_id, f'Вы ввели общий диаметр: {data[chat_id]["general"]} мм и диаметр стали:'
-#                                       f' {kern} мм')
-#             # Завершаем разговор, очищаем данные
-#             print(data[chat_id])
-#     else:
-#         bot.send_message(chat_id, 'Ошибка. Пожалуйста, начните с /start.')
-
-
-# @bot.message_handler(commands=['start'])
-# def getMessage(message):
-#     bot.send_message(message.from_user.id,
-#                      "Привет!", reply_markup=keyboard)
-#
-# @bot.message_handler(content_types=['text'])
-# def get_mes(msg):
-#     if msg.text == 'Расчет струны с одинарной навивкой':
-#         calculate_1(msg)
-#     elif msg.text == 'Расчет струны с двойной навивкой':
-#         calculate(msg)
-#
-# def calculate_1(msg):
-#     bot.send_message('Введите общий диаметр')
-#     general = msg.text
-#     bot.send_message('Введите диаметр стали')
-#     kern = msg.text
-#     calculator.
-#     bot.send_message('результаты')
 
 bot.polling(none_stop=True)
